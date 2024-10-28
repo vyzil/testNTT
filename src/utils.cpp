@@ -3,7 +3,7 @@
 void print_polynomial(const std::vector<FieldT>& poly)
 {
     
-    #define print_line() std::cout << std::string(200, '-') << std::endl
+    #define print_line() std::cout << std::string(160, '-') << std::endl
     /* Print out the polynomial in human-readable form */
     print_line();
     for (size_t i = 0; i < poly.size(); i++)
@@ -17,13 +17,16 @@ void print_polynomial(const std::vector<FieldT>& poly)
     #undef print_line
 }
 
-/* Function to read polynomial from a file */
+/* Function to read polynomial from a file in binary format */
 bool read_polynomial_from_file(const std::string& filename, std::vector<FieldT>& poly)
 {
-    std::ifstream input_file(filename);
+    std::ifstream input_file(filename, std::ios::binary);
     if (input_file.is_open()) {
-        FieldT value;
-        while (input_file >> value) {
+        while (!input_file.eof()) {
+            bigint<4> bigint_value;
+            input_file.read(reinterpret_cast<char*>(bigint_value.data), sizeof(bigint_value.data));
+            if (input_file.gcount() == 0) break;  // 파일의 끝에 도달한 경우
+            FieldT value(bigint_value);
             poly.push_back(value);
         }
         input_file.close();
@@ -33,7 +36,7 @@ bool read_polynomial_from_file(const std::string& filename, std::vector<FieldT>&
     }
 }
 
-/* Wrapper function to read polynomial from a file with timing */
+/* Wrapper function to read polynomial from a file with timing in binary format */
 bool read_polynomial(const std::string& filename, std::vector<FieldT>& poly)
 {
     std::cout << "\t[*] Reading " << filename;
@@ -52,18 +55,20 @@ bool read_polynomial(const std::string& filename, std::vector<FieldT>& poly)
     auto minutes = duration.count() / 60;
     auto seconds = duration.count() % 60;
 
-    std::cout << std::setw(30) << std::left  << "\r\t[+] Read " + filename
+    std::cout << std::setw(_print_align) << std::left  << "\r\t[+] Read " + filename
               << std::setw(10) << std::right << " (" << minutes << "m " << seconds << "s)" << std::endl;
     return true;
 }
 
-/* Function to write polynomial to a file */
+
+/* Function to write polynomial to a file in binary format */
 bool write_polynomial_to_file(const std::string& filename, const std::vector<FieldT>& poly)
 {
-    std::ofstream output_file(filename);
+    std::ofstream output_file(filename, std::ios::binary);
     if (output_file.is_open()) {
         for (const auto& value : poly) {
-            output_file << value << "\n";
+            const auto& bigint_value = value.as_bigint();
+            output_file.write(reinterpret_cast<const char*>(bigint_value.data), sizeof(bigint_value.data));
         }
         output_file.close();
         return true;
@@ -72,7 +77,7 @@ bool write_polynomial_to_file(const std::string& filename, const std::vector<Fie
     }
 }
 
-/* Wrapper function to write polynomial to a file with timing */
+/* Wrapper function to write polynomial to a file with timing in binary format */
 bool write_polynomial(const std::string& filename, const std::vector<FieldT>& poly)
 {
     std::cout << "\t[*] Writing " << filename;
@@ -91,7 +96,7 @@ bool write_polynomial(const std::string& filename, const std::vector<FieldT>& po
     auto minutes = duration.count() / 60;
     auto seconds = duration.count() % 60;
 
-    std::cout << std::setw(30) << std::left  << "\r\t[+] Written " + filename
+    std::cout << std::setw(_print_align) << std::left  << "\r\t[+] Written " + filename
               << std::setw(10) << std::right << " (" << minutes << "m " << seconds << "s)" << std::endl;
     return true;
 }

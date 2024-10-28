@@ -5,8 +5,6 @@
 #include <chrono>
 #include "utils.hpp"
 
-
-
 // Function to generate random polynomial and write to file
 template <typename FieldT>
 void generate_polynomial_to_file(const std::string& filename, size_t degree)
@@ -20,20 +18,24 @@ void generate_polynomial_to_file(const std::string& filename, size_t degree)
     std::cout << "\t[*] Generating " << filename << "...";
     std::cout.flush();
 
-    std::ofstream output_file(filename);
+    // std::ofstream output_file(filename);
+
+    std::ofstream output_file(filename, std::ios::binary);
 
     if (output_file.is_open()) {
         start_time = std::chrono::high_resolution_clock::now();
         for (size_t i = 0; i < degree; ++i) {
             FieldT value = FieldT::random_element();
-            output_file << value << "\n";
+            const auto& bigint_value = value.as_bigint();            
+            output_file.write(reinterpret_cast<const char*>(bigint_value.data), sizeof(bigint_value.data));
         }
+
         output_file.close();
         end_time = std::chrono::high_resolution_clock::now();
         duration = std::chrono::duration_cast<std::chrono::seconds>(end_time - start_time);
         minutes = duration.count() / 60;
         seconds = duration.count() % 60;
-        std::cout << std::setw(30) << std::left  << "\r\t[+] Polynomial written to " + filename 
+        std::cout << std::setw(_print_align) << std::left  << "\r\t[+] Polynomial written to " + filename 
                   << std::setw(10) << std::right << " (" << minutes << "m " << seconds << "s)" << std::endl;
     } else {
         std::cerr << "\r\t[-] Unable to open file " + filename << std::endl;

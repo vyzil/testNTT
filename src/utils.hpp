@@ -7,11 +7,14 @@
 #include <fstream>
 #include <iostream>
 #include <iomanip>
+#include <omp.h>
 
 #include <libff/algebra/curves/bls12_381/bls12_381_pp.hpp>
 #include <libff/algebra/fields/bigint.hpp>
 #include <libfqfft/polynomial_arithmetic/basic_operations.hpp>
 #include <libfqfft/evaluation_domain/domains/basic_radix2_domain_aux.hpp>
+
+#define _print_align 40
 
 using namespace libfqfft;
 using namespace libff;
