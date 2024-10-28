@@ -1,0 +1,116 @@
+
+#include <vector>
+#include <fstream>
+#include <algorithm>
+#include <functional>
+#include <gmp.h> 
+#include <gmpxx.h>
+
+#include <libff/algebra/curves/alt_bn128/alt_bn128_pp.hpp>
+#include <libff/algebra/fields/bigint.hpp>
+#include <libfqfft/polynomial_arithmetic/basic_operations.hpp>
+#include <libfqfft/evaluation_domain/domains/basic_radix2_domain_aux.hpp>
+
+using namespace libfqfft;
+using namespace libff;
+
+typedef alt_bn128_Fr FieldT;
+
+// `modulus` definition needed for Fp256
+bigint<4> modulus;
+typedef Fp_model<4, modulus> Fp256;
+
+template<typename FieldT>
+bool _is_zero(const std::vector<FieldT> &a)
+{
+    return std::all_of(a.begin(), a.end(), [](FieldT i) { return i == FieldT::zero(); });
+}
+
+template<typename FieldT>
+void _condense(std::vector<FieldT> &a)
+{
+    while (a.begin() != a.end() && a.back() == FieldT::zero())
+        a.pop_back();
+}
+
+template<typename FieldT>
+void _reverse(std::vector<FieldT> &a, const size_t n)
+{
+    std::reverse(a.begin(), a.end());
+    a.resize(n);
+}
+
+/* Polynomial Multiplication via FFT */
+template <typename FieldT>
+void polynomial_multiplication_on_FFT_example(const std::vector<FieldT>& a, const std::vector<FieldT>& b)
+{
+    const size_t n = libff::get_power_of_two(a.size() + b.size() - 1);
+    FieldT omega = libff::get_root_of_unity<FieldT>(n);
+
+    std::vector<FieldT> u(a);
+    std::vector<FieldT> v(b);
+    std::vector<FieldT> c(1, FieldT::zero());
+
+    u.resize(n, FieldT::zero());
+    v.resize(n, FieldT::zero());
+    c.resize(n, FieldT::zero());
+
+    _basic_serial_radix2_FFT(u, omega);
+    _basic_serial_radix2_FFT(v, omega);
+
+    std::transform(u.begin(), u.end(), v.begin(), c.begin(), std::multiplies<FieldT>());
+
+    _basic_serial_radix2_FFT(c, omega.inverse());
+    const FieldT sconst = FieldT(n).inverse();
+    std::transform(c.begin(), c.end(), c.begin(), std::bind(std::multiplies<FieldT>(), sconst, std::placeholders::_1));
+    // _condense(c);
+
+    /* Print out the polynomial in human-readable form */
+    for (size_t i = 0; i < c.size(); i++)
+    {
+        bigint<4> coefficient_bigint = c[i].as_bigint();
+        mpz_class coefficient;
+        mpz_import(coefficient.get_mpz_t(), 4, -1, sizeof(coefficient_bigint.data[0]), 0, 0, coefficient_bigint.data);
+
+        std::cout << i << " : " << "0x" << coefficient.get_str(16) << " (" << coefficient.get_str() << ")" <<  std::endl;
+    }
+}
+
+// Function to initialize `modulus` for Fp256
+void initialize_modulus(bigint<4>& modulus) {
+    mpz_t tmp;
+    mpz_init_set_str(tmp, "73eda753299d7d483339d80809a1d80553bda402fffe5bfeffffffff00000001", 16);
+    for (size_t i = 0; i < 4; ++i) {
+        modulus.data[i] = mpz_getlimbn(tmp, i);
+    }
+    mpz_clear(tmp);
+}
+
+int main() {
+    printf("-- Start Main --\n");
+
+    alt_bn128_pp::init_public_params();
+
+    initialize_modulus(modulus);
+
+
+    // std::vector<FieldT> a = { FieldT(1), FieldT(2), FieldT(3), FieldT(4), FieldT(1), FieldT(2), FieldT(3), FieldT(4) };
+    // std::vector<FieldT> b = { FieldT(5), FieldT(6), FieldT(7), FieldT(8), FieldT(5), FieldT(6), FieldT(7), FieldT(8) };
+
+    std::cout << "Generating Input, A" << std::endl;
+    std::vector<FieldT> a(1 << 20);
+    for (auto& elem : a) {
+        elem = FieldT::random_element();
+    }
+
+    std::cout << "Generating Input, B" << std::endl;
+    std::vector<FieldT> b(1 << 20);
+    for (auto& elem : b) {
+        elem = FieldT::random_element();
+    }
+
+    polynomial_multiplication_on_FFT_example<FieldT>(a, b);
+
+    printf("-- End Main --\n");
+    return 0;
+}
