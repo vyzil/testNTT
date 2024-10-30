@@ -16,6 +16,7 @@ endif()
 # 2. Set Directory Path
 set(LIBFQFFT_DIR ${CMAKE_SOURCE_DIR}/depends/libfqfft)
 set(LIBFF_DIR ${LIBFQFFT_DIR}/depends/libff)
+set(INSTALL_DIR ${CMAKE_SOURCE_DIR}/build/install)
 
 # 3. LIBRARY
 ## libfqfft
