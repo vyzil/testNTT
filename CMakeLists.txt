@@ -16,7 +16,6 @@ endif()
 # 2. Set Directory Path
 set(LIBFQFFT_DIR ${CMAKE_SOURCE_DIR}/depends/libfqfft)
 set(LIBFF_DIR ${LIBFQFFT_DIR}/depends/libff)
-set(INSTALL_DIR ${CMAKE_SOURCE_DIR}/depends/install)
 
 # 3. LIBRARY
 ## libfqfft
@@ -30,8 +29,6 @@ if(NOT EXISTS ${LIBFQFFT_DIR})
 endif()
 
 ### Build & Install libfqfft with MULTICORE
-
-
 execute_process(
     COMMAND git submodule init
     WORKING_DIRECTORY ${LIBFQFFT_DIR}

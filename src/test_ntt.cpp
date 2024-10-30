@@ -152,9 +152,9 @@ int main() {
     polynomial_multiplication(a, b, c);
     if(!write_polynomial("data/input_c.txt", c)) return 1;
 
-    print_polynomial(a);
-    print_polynomial(b);
-    print_polynomial(c);
+    // print_polynomial(a);
+    // print_polynomial(b);
+    // print_polynomial(c);
 
     std::cout << "-- End Main --" << std::endl;
     return 0;

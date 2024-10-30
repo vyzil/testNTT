@@ -19,6 +19,22 @@ make
 - Serial : `cmake .. -DMULTICORE=OFF`
 
 ## ETC
+- My COnfig
+```
+# CMAKE
+$ $cmake -LAH | grep CMAKE_CXX_COMPILER
+CMAKE_CXX_COMPILER:FILEPATH=/usr/bin/c++
+CMAKE_CXX_COMPILER_AR:FILEPATH=/usr/bin/gcc-ar-12
+CMAKE_CXX_COMPILER_RANLIB:FILEPATH=/usr/bin/gcc-ranlib-12
+
+# C++
+$ c++ --version
+c++ (Ubuntu 12.3.0-1ubuntu1~22.04) 12.3.0
+Copyright (C) 2022 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+```
+
 - Core Check
 ```
 sudo apt-get install sysstat
@@ -29,4 +45,3 @@ mpstat -P ALL 1
 ```
 pip3 install gmpy2
 ```
-
