@@ -1,0 +1,3 @@
+[submodule "depends/libfqfft"]
+	path = depends/libfqfft
+	url = https://github.com/vyzil/libfqfft
