@@ -10,7 +10,7 @@
 #include <omp.h>
 
 #include <libff/algebra/curves/bls12_381/bls12_381_pp.hpp>
-#include <libff/algebra/fields/bigint.hpp>
+#include <libff/algebra/field_utils/bigint.hpp>
 #include <libfqfft/polynomial_arithmetic/basic_operations.hpp>
 #include <libfqfft/evaluation_domain/domains/basic_radix2_domain_aux.hpp>
 
