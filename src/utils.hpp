@@ -7,6 +7,7 @@
 #include <fstream>
 #include <iostream>
 #include <iomanip>
+#include <getopt.h>
 #include <omp.h>
 
 #include <libff/algebra/curves/bls12_381/bls12_381_pp.hpp>

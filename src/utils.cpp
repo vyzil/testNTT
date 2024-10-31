@@ -2,8 +2,8 @@
 
 void print_polynomial(const std::vector<FieldT>& poly)
 {
-    
-    #define print_line() std::cout << std::string(160, '-') << std::endl
+    std::cout << "[i] Polynomial Info" << std::endl;
+    #define print_line() std::cout << "\t" << std::string(150, '-') << std::endl
     /* Print out the polynomial in human-readable form */
     print_line();
     for (size_t i = 0; i < poly.size(); i++)
@@ -39,14 +39,14 @@ bool read_polynomial_from_file(const std::string& filename, std::vector<FieldT>&
 /* Wrapper function to read polynomial from a file with timing in binary format */
 bool read_polynomial(const std::string& filename, std::vector<FieldT>& poly)
 {
-    std::cout << "\t[*] Reading " << filename;
+    std::cout << "[*] Reading " << filename;
     std::cout.flush();
 
     auto start_time = std::chrono::high_resolution_clock::now();
 
     bool success = read_polynomial_from_file(filename, poly);
     if (!success) {
-        std::cerr << "\r\t[-] Unable to open " << filename << std::endl;
+        std::cerr << "\r[-] Unable to open " << filename << std::endl;
         return false;
     }
 
@@ -55,7 +55,7 @@ bool read_polynomial(const std::string& filename, std::vector<FieldT>& poly)
     auto minutes = duration.count() / 60;
     auto seconds = duration.count() % 60;
 
-    std::cout << std::setw(_print_align) << std::left  << "\r\t[+] Read " + filename
+    std::cout << std::setw(_print_align) << std::left  << "\r[+] Read " + filename
               << std::setw(10) << std::right << " (" << minutes << "m " << seconds << "s)" << std::endl;
     return true;
 }
@@ -80,14 +80,14 @@ bool write_polynomial_to_file(const std::string& filename, const std::vector<Fie
 /* Wrapper function to write polynomial to a file with timing in binary format */
 bool write_polynomial(const std::string& filename, const std::vector<FieldT>& poly)
 {
-    std::cout << "\t[*] Writing " << filename;
+    std::cout << "[*] Writing " << filename;
     std::cout.flush();
 
     auto start_time = std::chrono::high_resolution_clock::now();
 
     bool success = write_polynomial_to_file(filename, poly);
     if (!success) {
-        std::cerr << "\r\t[-] Unable to write to " << filename << std::endl;
+        std::cerr << "\r[-] Unable to write to " << filename << std::endl;
         return false;
     }
 
@@ -96,7 +96,7 @@ bool write_polynomial(const std::string& filename, const std::vector<FieldT>& po
     auto minutes = duration.count() / 60;
     auto seconds = duration.count() % 60;
 
-    std::cout << std::setw(_print_align) << std::left  << "\r\t[+] Written " + filename
+    std::cout << std::setw(_print_align) << std::left  << "\r[+] Written " + filename
               << std::setw(10) << std::right << " (" << minutes << "m " << seconds << "s)" << std::endl;
     return true;
 }

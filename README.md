@@ -1,12 +1,10 @@
 # Test NTT Project
 
-
 ## Requirement
 ```
 sudo apt-get install build-essential git libboost-all-dev cmake libgmp3-dev libssl-dev libprocps3-dev pkg-config libsodium-dev
 gnuplot-x11
 ```
-
 ## Build
 ```
 mkdir build
@@ -17,6 +15,18 @@ make
 ### Option
 - Default : multi-core
 - Serial : `cmake .. -DMULTICORE=OFF`
+
+## Usage
+```
+./generate_input -n 3
+./polynomial_multiplication -m
+```
+### generate_input
+- `n` : option referce to polynomial size : 2^n
+
+### polynomial_multiplication
+- `m` : parallel mode using openmp
+- `t` : test mode, using small (hard coded) value 
 
 ## ETC
 - My COnfig

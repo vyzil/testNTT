@@ -20,13 +20,10 @@ set(INSTALL_DIR ${CMAKE_SOURCE_DIR}/build/install)
 
 # 3. LIBRARY
 ## libfqfft
-### Clone
-if(NOT EXISTS ${LIBFQFFT_DIR})
-    message(STATUS "Cloning libfqfft into ${LIBFQFFT_DIR}")
-    execute_process(
-        COMMAND git clone https://github.com/vyzil/libfqfft.git ${LIBFQFFT_DIR}
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/depends
-    )
+if(NOT EXISTS ${LIBFQFFT_DIR}/.git)
+    message(STATUS "Initializing and updating submodules...")
+    execute_process(COMMAND git submodule update --init --recursive
+                    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 endif()
 
 ### Build & Install libfqfft with MULTICORE
@@ -71,9 +68,9 @@ find_library(GMPXX_LIB gmpxx REQUIRED)
 find_library(PROCPS_LIB procps REQUIRED)
 
 ## Set Targets
-file(GLOB TEST_NTT_SRC "src/test_ntt.cpp" "src/utils.cpp")
-add_executable(testNTT ${TEST_NTT_SRC})
-target_link_libraries(testNTT PRIVATE ${INSTALL_DIR}/lib/libff.a ${GMP_LIB} ${GMPXX_LIB} ${PROCPS_LIB} OpenMP::OpenMP_CXX)
+file(GLOB POLYNOMIAL_MULTIPLICATION_SRC "src/polynomial_multiplication.cpp" "src/utils.cpp")
+add_executable(polynomial_multiplication ${POLYNOMIAL_MULTIPLICATION_SRC})
+target_link_libraries(polynomial_multiplication PRIVATE ${INSTALL_DIR}/lib/libff.a ${GMP_LIB} ${GMPXX_LIB} ${PROCPS_LIB} OpenMP::OpenMP_CXX)
 
 file(GLOB GENERATE_INPUT_SRC "src/generate_input.cpp" "src/utils.cpp")
 add_executable(generate_input ${GENERATE_INPUT_SRC})
@@ -81,9 +78,6 @@ target_link_libraries(generate_input PRIVATE ${INSTALL_DIR}/lib/libff.a ${GMP_LI
 
 # 6. ETC
 ## Data Dir
-add_custom_command(TARGET testNTT POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:testNTT>/data"
-    COMMENT "Creating data directory in build folder"
-)
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/data")
 
 message(STATUS "MULTICORE_OPTION: ${MULTICORE_OPTION}")

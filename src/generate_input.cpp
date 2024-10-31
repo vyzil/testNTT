@@ -1,8 +1,3 @@
-#include <fstream>
-#include <iostream>
-#include <vector>
-#include <getopt.h>
-#include <chrono>
 #include "utils.hpp"
 
 // Function to generate random polynomial and write to file
@@ -15,7 +10,7 @@ void generate_polynomial_to_file(const std::string& filename, size_t degree)
     int minutes;
     int seconds;
 
-    std::cout << "\t[*] Generating " << filename << "...";
+    std::cout << "[*] Generating " << filename << "...";
     std::cout.flush();
 
     // std::ofstream output_file(filename);
@@ -35,10 +30,10 @@ void generate_polynomial_to_file(const std::string& filename, size_t degree)
         duration = std::chrono::duration_cast<std::chrono::seconds>(end_time - start_time);
         minutes = duration.count() / 60;
         seconds = duration.count() % 60;
-        std::cout << std::setw(_print_align) << std::left  << "\r\t[+] Polynomial written to " + filename 
+        std::cout << std::setw(_print_align) << std::left  << "\r[+] Polynomial written to " + filename 
                   << std::setw(10) << std::right << " (" << minutes << "m " << seconds << "s)" << std::endl;
     } else {
-        std::cerr << "\r\t[-] Unable to open file " + filename << std::endl;
+        std::cerr << "\r[-] Unable to open file " + filename << std::endl;
     }
 }
 
@@ -61,12 +56,10 @@ int main(int argc, char* argv[]) {
 
     degree = 1 << k;
 
-    std::cout << "-- Start Generate Input --" << std::endl;
     bls12_381_pp::init_public_params();
     std::cout << "Generating data with degree: 2^" << k << " (" << degree << " elements)" << std::endl;
     generate_polynomial_to_file<FieldT>("data/input_a.txt", degree);
     generate_polynomial_to_file<FieldT>("data/input_b.txt", degree);
-    std::cout << "-- End Generate Input --" << std::endl;
 
     return 0;
 }
