@@ -122,14 +122,16 @@ void polynomial_multiplication_parallel(const std::vector<FieldT>& a, const std:
     return;
 }
 
-void parse_arguments(int argc, char *argv[], bool &multicore, bool &test_mode) {
+void parse_arguments(int argc, char *argv[], bool &multicore, bool &test_mode, bool &debug_mode) {
     multicore = false;
     test_mode = false;
+    debug_mode = false;
 
-    const char *short_opts = "mt";
+    const char *short_opts = "mtd";
     const option long_opts[] = {
         {"multicore", no_argument, nullptr, 'm'},
         {"test", no_argument, nullptr, 't'},
+        {"debug", no_argument, nullptr, 'd'},
         {nullptr, no_argument, nullptr, 0}
     };
 
@@ -142,8 +144,11 @@ void parse_arguments(int argc, char *argv[], bool &multicore, bool &test_mode) {
             case 't':
                 test_mode = true;
                 break;
+            case 'd':
+                debug_mode = true;
+                break;
             default:
-                std::cerr << "Usage: " << argv[0] << " [-m|--multicore] [-t|--test]" << std::endl;
+                std::cerr << "Usage: " << argv[0] << " [-m|--multicore] [-t|--test] [-d|--debug]" << std::endl;
                 exit(EXIT_FAILURE);
         }
     }
@@ -152,7 +157,9 @@ void parse_arguments(int argc, char *argv[], bool &multicore, bool &test_mode) {
 int main(int argc, char *argv[]) {    
     bool multicore;
     bool test_mode;
-    parse_arguments(argc, argv, multicore, test_mode);
+    bool debug_mode;
+
+    parse_arguments(argc, argv, multicore, test_mode, debug_mode);
 
     if (multicore) {
         const size_t num_cpus = omp_get_max_threads();
@@ -175,7 +182,7 @@ int main(int argc, char *argv[]) {
         if(!read_polynomial("data/input_b.txt", b)) return 1;
     } else {
         a = {1, 2};
-        b = {3, 4};
+        b = {3, 5};
     }
 
     const size_t n = libff::get_power_of_two(a.size());
@@ -183,6 +190,7 @@ int main(int argc, char *argv[]) {
     std::cout << "[i] NTT Parameter" << std::endl;
     std::cout << "\t - Polynomial Size : " << n << std::endl;
     std::cout << "\t - Omega : " << omega << std::endl;
+    std::cout << "\t - O_inv : " << omega.inverse() << std::endl;
 
     if(multicore) polynomial_multiplication_parallel(a, b, c);
     else polynomial_multiplication_serial(a, b, c);
@@ -191,9 +199,11 @@ int main(int argc, char *argv[]) {
         if(!write_polynomial("data/input_c.txt", c)) return 1;
     }
 
-    print_polynomial(a);
-    print_polynomial(b);
-    print_polynomial(c);
+    if (test_mode || debug_mode) {
+        print_polynomial(a);
+        print_polynomial(b);
+        print_polynomial(c);
+    }
     
     return 0;
 }

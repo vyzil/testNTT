@@ -21,7 +21,6 @@ using namespace libfqfft;
 using namespace libff;
 
 typedef bls12_381_Fr FieldT;
-typedef Fp_model<4, bls12_381_modulus_r> Fp256;
 
 void print_polynomial(const std::vector<FieldT>& poly);
 
