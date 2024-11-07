@@ -79,7 +79,7 @@ void polynomial_multiplication_on_FFT_parallel(const std::vector<FieldT>& a, con
 
     // -- # Negative Wrapped Convolution --
     const size_t n = libff::get_power_of_two(a.size());
-    FieldT omega = libff::get_root_of_unity<FieldT>(2*n);
+    FieldT omega = libff::get_root_of_unity<FieldT>(n);
 
     std::vector<FieldT> u(a);
     std::vector<FieldT> v(b);
@@ -186,7 +186,7 @@ int main(int argc, char *argv[]) {
     }
 
     const size_t n = libff::get_power_of_two(a.size());
-    FieldT omega = libff::get_root_of_unity<FieldT>(2*n);
+    FieldT omega = libff::get_root_of_unity<FieldT>(n);
     std::cout << "[i] NTT Parameter" << std::endl;
     std::cout << "\t - Polynomial Size : " << n << std::endl;
     std::cout << "\t - Omega : " << omega << std::endl;
