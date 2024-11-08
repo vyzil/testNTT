@@ -76,6 +76,10 @@ file(GLOB GENERATE_INPUT_SRC "src/generate_input.cpp" "src/utils.cpp")
 add_executable(generate_input ${GENERATE_INPUT_SRC})
 target_link_libraries(generate_input PRIVATE ${INSTALL_DIR}/lib/libff.a ${GMP_LIB} ${GMPXX_LIB} ${PROCPS_LIB} OpenMP::OpenMP_CXX)
 
+file(GLOB NTT_TEST_SRC "src/ntt_test.cpp" "src/utils.cpp")
+add_executable(ntt_test ${NTT_TEST_SRC})
+target_link_libraries(ntt_test PRIVATE ${INSTALL_DIR}/lib/libff.a ${GMP_LIB} ${GMPXX_LIB} ${PROCPS_LIB} OpenMP::OpenMP_CXX)
+
 # 6. ETC
 ## Data Dir
 file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/data")

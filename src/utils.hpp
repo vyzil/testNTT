@@ -29,6 +29,6 @@ bool read_polynomial(const std::string& filename, std::vector<FieldT>& poly);
 bool write_polynomial_to_file(const std::string& filename, const std::vector<FieldT>& poly);
 bool write_polynomial(const std::string& filename, const std::vector<FieldT>& poly);
 
-
+void generate_polynomial_to_file(const std::string& filename, size_t degree);
 
 #endif // FFT_OPERATIONS_HPP

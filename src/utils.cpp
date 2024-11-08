@@ -1,5 +1,44 @@
 #include "utils.hpp"
 
+// Function to generate random polynomial and write to file
+void generate_polynomial_to_file(const std::string& filename, size_t degree)
+{
+    std::chrono::time_point<std::chrono::high_resolution_clock> start_time;
+    std::chrono::time_point<std::chrono::high_resolution_clock> end_time;
+    std::chrono::seconds duration;
+    int minutes;
+    int seconds;
+
+    std::cout << "[*] Generating " << filename << "...";
+    std::cout.flush();
+
+    // std::ofstream output_file(filename);
+
+    std::ofstream output_file(filename, std::ios::binary);
+
+    if (output_file.is_open()) {
+        start_time = std::chrono::high_resolution_clock::now();
+        for (size_t i = 0; i < degree; ++i) {
+            FieldT value = FieldT::random_element();
+            const auto& bigint_value = value.as_bigint();            
+            output_file.write(reinterpret_cast<const char*>(bigint_value.data), sizeof(bigint_value.data));
+        }
+
+        output_file.close();
+        end_time = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+        auto minutes = duration.count() / 60000;
+        auto seconds = (duration.count() % 60000) / 1000;
+        auto milliseconds = duration.count() % 1000;
+
+        std::cout << std::dec;
+        std::cout << std::setw(_print_align) << std::left  << "\r[+] Polynomial written to " + filename 
+                  << std::setw(10) << std::right << " (" << minutes << "m " << seconds << "s " << milliseconds << "ms)" << std::endl;
+    } else {
+        std::cerr << "\r[-] Unable to open file " + filename << std::endl;
+    }
+}
+
 void print_polynomial(const std::vector<FieldT>& poly)
 {
     std::cout << "[i] Polynomial Info" << std::endl;
@@ -51,12 +90,14 @@ bool read_polynomial(const std::string& filename, std::vector<FieldT>& poly)
     }
 
     auto end_time = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::seconds>(end_time - start_time);
-    auto minutes = duration.count() / 60;
-    auto seconds = duration.count() % 60;
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+    auto minutes = duration.count() / 60000;
+    auto seconds = (duration.count() % 60000) / 1000;
+    auto milliseconds = duration.count() % 1000;
 
+    std::cout << std::dec;
     std::cout << std::setw(_print_align) << std::left  << "\r[+] Read " + filename
-              << std::setw(10) << std::right << " (" << minutes << "m " << seconds << "s)" << std::endl;
+              << std::setw(10) << std::right << " (" << minutes << "m " << seconds << "s " << milliseconds << "ms)" << std::endl;
     return true;
 }
 
@@ -92,11 +133,13 @@ bool write_polynomial(const std::string& filename, const std::vector<FieldT>& po
     }
 
     auto end_time = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::seconds>(end_time - start_time);
-    auto minutes = duration.count() / 60;
-    auto seconds = duration.count() % 60;
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+    auto minutes = duration.count() / 60000;
+    auto seconds = (duration.count() % 60000) / 1000;
+    auto milliseconds = duration.count() % 1000;
 
+    std::cout << std::dec;
     std::cout << std::setw(_print_align) << std::left  << "\r[+] Written " + filename
-              << std::setw(10) << std::right << " (" << minutes << "m " << seconds << "s)" << std::endl;
+              << std::setw(10) << std::right << " (" << minutes << "m " << seconds << "s " << milliseconds << "ms)" << std::endl;
     return true;
 }

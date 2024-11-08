@@ -51,12 +51,14 @@ void polynomial_multiplication_serial(const std::vector<FieldT>& a, const std::v
     auto start_time = std::chrono::high_resolution_clock::now();
     polynomial_multiplication_on_FFT_serial<FieldT>(a, b, c);
     auto end_time = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::seconds>(end_time - start_time);
-    auto minutes = duration.count() / 60;
-    auto seconds = duration.count() % 60;
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+    auto minutes = duration.count() / 60000;
+    auto seconds = (duration.count() % 60000) / 1000;
+    auto milliseconds = duration.count() % 1000;
 
+    std::cout << std::dec;
     std::cout << std::setw(_print_align) << std::left  << "\r[+] Serial FFT process complete"
-              << std::setw(10) << std::right << " (" << minutes << "m " << seconds << "s)" << std::endl;
+              << std::setw(10) << std::right << " (" << minutes << "m " << seconds << "s)" << milliseconds << "ms)" << std::endl;
 
     return;
 }
@@ -112,12 +114,14 @@ void polynomial_multiplication_parallel(const std::vector<FieldT>& a, const std:
     auto start_time = std::chrono::high_resolution_clock::now();
     polynomial_multiplication_on_FFT_parallel<FieldT>(a, b, c);
     auto end_time = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::seconds>(end_time - start_time);
-    auto minutes = duration.count() / 60;
-    auto seconds = duration.count() % 60;
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+    auto minutes = duration.count() / 60000;
+    auto seconds = (duration.count() % 60000) / 1000;
+    auto milliseconds = duration.count() % 1000;
 
-    std::cout << std::setw(_print_align) << std::left  << "\r[+] Parallel FFT process complete"
-              << std::setw(10) << std::right << " (" << minutes << "m " << seconds << "s)" << std::endl;
+    std::cout << std::dec;
+    std::cout << std::setw(_print_align) << std::left << "\r[+] Parallel FFT process complete"
+              << std::setw(10) << std::right << " (" << minutes << "m " << seconds << "s " << milliseconds << "ms)" << std::endl;
 
     return;
 }
@@ -189,14 +193,14 @@ int main(int argc, char *argv[]) {
     FieldT omega = libff::get_root_of_unity<FieldT>(n);
     std::cout << "[i] NTT Parameter" << std::endl;
     std::cout << "\t - Polynomial Size : " << n << std::endl;
-    std::cout << "\t - Omega : " << omega << std::endl;
-    std::cout << "\t - O_inv : " << omega.inverse() << std::endl;
+    std::cout << "\t - Omega : 0x" << std::hex << omega << std::endl;
+    std::cout << "\t - O_inv : 0x" << std::hex << omega.inverse() << std::endl;
 
     if(multicore) polynomial_multiplication_parallel(a, b, c);
     else polynomial_multiplication_serial(a, b, c);
     
     if (!test_mode) { 
-        if(!write_polynomial("data/input_c.txt", c)) return 1;
+        if(!write_polynomial("data/output_c.txt", c)) return 1;
     }
 
     if (test_mode || debug_mode) {
